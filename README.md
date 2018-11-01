@@ -1,4 +1,4 @@
 # TSP_genetic_algorithm
 > in development
 
-Artificial intelligence course's  schoolwork 
+Implementation of the genetic algorithm for TSP problem as a partial requirement in the Artificial intelligence course.
