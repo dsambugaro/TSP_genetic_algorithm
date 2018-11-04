@@ -221,7 +221,7 @@ def argmax(vetor):
     '''
     return np.argsort(vetor)[-1]
 
-def genect(cities, pop_size, crossover, mutation, elitsm=False, fitness_fn=fitness, k_gen=10, stagnation=True):
+def genect(cities, pop_size, crossover, mutation, chance_multation=0.05, elitsm=False, fitness_fn=fitness, k_gen=10, stagnation=True):
     pop = initialPopulation(list(cities['NODE']), pop_size)
     
     # Subtract necessary because this will be used as indices in arrays
@@ -249,12 +249,13 @@ def genect(cities, pop_size, crossover, mutation, elitsm=False, fitness_fn=fitne
                 child = alternativeCrossover(parent_1, parent_2)
             else:
                 raise Exception('Crossover ' + crossover + ' not implemented yet')
-            if mutation == 'swap':
-                child = mutate_v1(child)
-            elif mutation == 'scramble ':
-                child = mutate_v2(child)
-            else:
-                raise Exception('Mutation ' + mutation + ' not implemented yet')
+            if np.random.uniform() < chance_multation:
+                if mutation == 'swap':
+                    child = mutate_v1(child)
+                elif mutation == 'scramble ':
+                    child = mutate_v2(child)
+                else:
+                    raise Exception('Mutation ' + mutation + ' not implemented yet')
             
             new_pop.append(child)
             
@@ -293,7 +294,7 @@ def genect(cities, pop_size, crossover, mutation, elitsm=False, fitness_fn=fitne
 
 def main():
     cities = pd.read_csv('data/a280.csv', ';')
-    best_way, last_pop = genect(cities, 20, 'alternative', 'swap', k_gen=10)
+    best_way, last_pop = genect(cities, 5, 'alternative', 'swap', k_gen=10)
     print('Best route:')
     print(*best_way)
     
