@@ -131,11 +131,12 @@ def alternativeCrossover(parent_1, parent_2):
     Returns a child created with an alternative crossover
     '''
       
-    child = parent_1
-    cut = random.randrange(1,len(parent_1)+1)
+    child = list(parent_1)
+    cut = random.randrange(0,len(parent_1)-1)
     
-    for i in range(cut, len(parent_1)):
-        if(parent_1[i]) not in parent_2[0:i] and (parent_2[i] not in parent_1[0:i]):
+    for i in range(cut, len(child)):
+        if parent_1[i] not in parent_2[cut:] and parent_2[i] not in child[:cut]:
+            child[child.index(parent_2[i])] = child[i]
             child[i] = parent_2[i]
     
     return child
@@ -235,7 +236,7 @@ def genect(cities, pop_size, crossover, mutation, elitsm=False, fitness_fn=fitne
     
     while last_improvement < k_gen:
         number_generations += 1
-        print('Geração atual: {}'.format(number_generations))
+        print('Generation: {}'.format(number_generations))
         new_pop = []
         for individual in pop:
             parent_1 = pick_parent(pop, cities, fitness_fn)
@@ -262,7 +263,7 @@ def genect(cities, pop_size, crossover, mutation, elitsm=False, fitness_fn=fitne
         
         pop = new_pop
         new_best_solution = pop[argmax(map(fitness_fn, pop))]
-        print('Fitness dessa geração: {}'.format(fitness_fn(new_best_solution, cities)))
+        print('Generation Fitness: {}'.format(fitness_fn(new_best_solution, cities)))
         
         if fitness_fn(new_best_solution, cities) > fitness_fn(best_solution, cities):
             best_solution = new_best_solution
@@ -292,7 +293,7 @@ def genect(cities, pop_size, crossover, mutation, elitsm=False, fitness_fn=fitne
 
 def main():
     cities = pd.read_csv('data/a280.csv', ';')
-    best_way, last_pop = genect(cities, 5, 'ordered_v1', 'swap', k_gen=10)
+    best_way, last_pop = genect(cities, 20, 'alternative', 'swap', k_gen=10)
     print('Best route:')
     print(*best_way)
     
