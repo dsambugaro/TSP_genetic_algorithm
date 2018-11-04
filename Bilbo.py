@@ -118,7 +118,7 @@ def orderedCrossover_v2(parent_1, parent_2, random_qnt):
     positions_ordered = []
     for node in parent_2:
         if node in subset:
-            positions_ordered.append(parent_2.index(node))
+            positions_ordered.append(subset.index(node))
     
     child = parent_1
     for i in range(len(subset)):
@@ -126,19 +126,176 @@ def orderedCrossover_v2(parent_1, parent_2, random_qnt):
     
     return child
 
+def alternativeCrossover(parent_1, parent_2):
+    '''
+    Returns a child created with an alternative crossover
+    '''
+      
+    child = parent_1
+    cut = random.randrange(1,len(parent_1)+1)
+    
+    for i in range(cut, len(parent_1)):
+        if(parent_1[i]) not in parent_2[0:i] and (parent_2[i] not in parent_1[0:i]):
+            child[i] = parent_2[i]
+    
+    return child
+
+def mutate_v1(child):
+    '''
+    Swap mutation: swap positions of two genes
+    '''
+    index_1 = random.randrange(0,len(child)) # Get a random position
+    index_2 = random.randrange(0,len(child)) # Get another random position
+
+    
+    if index_1 != index_2:
+        aux = child[index_1]
+        child[index_1] = child[index_2]
+        child[index_2] = aux
+    else:                                        # Equal positions
+        mutate_v1(child)
+    return child
+
+def mutate_v2(child):
+    '''
+    Scramble mutation: A variable set of genes is chosen, shuffled, and
+    inserted back into the individual.
+    '''
+
+    index_1 = random.randrange(0,len(child)) # Random initial position
+    index_2 = random.randrange(0,len(child)) # Random final position
+
+    if (index_1 > index_2) or ((index_2 - index_1) < 1):
+        mutate_v2(child)
+    
+    else:
+        aux = child[index_1:index_2+1]
+        aux1 = aux
+        aux = random.sample(aux,len(aux))
+        if aux == aux1:
+            while aux == aux1:
+                aux = random.sample(aux,len(aux))                
+
+        j = 0
+        for i in range(index_1,(index_2+1)):
+            child[i] = aux[j]
+            j = j+1
+   
+    
+    return child
+
+def acumulate(v): 
+    '''
+    Creates the accumulated distribution table
+    '''
+    acum = 0
+    r = []
+    for i in v:
+        acum += i
+        r.append(acum)
+    return r   
+
+
+def pick_parent(pop, cities, fitness_fn):
+    '''
+    Selects an individual to be a parent, based on roulette technique
+    '''
+    
+    fits = []
+    for i in range(len(pop)):
+        fits.append(fitness_fn(pop[i],cities))
+
+    fits_sum = sum(fits)
+    norm = map(lambda x: x / fits_sum, fits)
+    acum = acumulate(norm)
+    r = np.random.uniform()
+    
+    for i in range(len(acum)):
+        if r < acum[i]:
+            return pop[i]
+
+def argmax(vetor):
+    '''
+    Returns the index of the bigger element of a given array
+    '''
+    return np.argsort(vetor)[-1]
+
+def genect(cities, pop_size, crossover, mutation, elitsm=False, fitness_fn=fitness, k_gen=10, stagnation=True):
+    pop = initialPopulation(list(cities['NODE']), pop_size)
+    
+    # Subtract necessary because this will be used as indices in arrays
+    pop = np.subtract(pop, 1)
+    
+    best_solution = pop[argmax(map(fitness_fn, pop))]
+    max_solution = []
+    avg_solution = []
+    number_generations = 0
+    
+    last_improvement = 0
+    
+    while last_improvement < k_gen:
+        number_generations += 1
+        print('Geração atual: {}'.format(number_generations))
+        new_pop = []
+        for individual in pop:
+            parent_1 = pick_parent(pop, cities, fitness_fn)
+            parent_2 = pick_parent(pop, cities, fitness_fn)
+            if crossover == 'ordered_v1':
+                child = orderedCrossover_v1(parent_1, parent_2)
+            elif crossover == 'ordered_v2':
+                child = orderedCrossover_v2(parent_1, parent_2, 3)
+            elif crossover == 'alternative':
+                child = alternativeCrossover(parent_1, parent_2)
+            else:
+                raise Exception('Crossover ' + crossover + ' not implemented yet')
+            if mutation == 'swap':
+                child = mutate_v1(child)
+            elif mutation == 'scramble ':
+                child = mutate_v2(child)
+            else:
+                raise Exception('Mutation ' + mutation + ' not implemented yet')
+            
+            new_pop.append(child)
+            
+        if elitsm:
+            pass
+        
+        pop = new_pop
+        new_best_solution = pop[argmax(map(fitness_fn, pop))]
+        print('Fitness dessa geração: {}'.format(fitness_fn(new_best_solution, cities)))
+        
+        if fitness_fn(new_best_solution, cities) > fitness_fn(best_solution, cities):
+            best_solution = new_best_solution
+            last_improvement = 0
+        else:
+            last_improvement += 1
+        
+        max_solution.append(fitness_fn(new_best_solution, cities))        
+        
+        fits = []
+        for i in range(len(pop)):
+            fits.append(fitness_fn(pop[i],cities))
+        fits_sum = sum(fits)        
+        
+        avg_solution.append(fits_sum / len(pop))
+        
+    plt.figure()
+    plt.plot(range(number_generations), max_solution, label='Max fitness')
+    plt.plot(range(number_generations), avg_solution, label='Avg fitness')
+    plt.legend()
+    plt.ylabel('Fitness')
+    plt.xlabel('Generation')
+    plt.show()
+    
+    return best_solution, pop
+            
+
 def main():
     cities = pd.read_csv('data/a280.csv', ';')
-    pop = initialPopulation(list(cities['NODE']), 15)
-    pop = np.subtract(pop, 1)
-    #for i in range(len(pop)-1):
-    #    fits = fitness(pop[i], cities)
-    p1 = [1,2,3,4,5,6,7,8,9]
-    p2 = [1,3,5,7,9,2,4,6,8]
-    print('Parent 1:', end=' ')
-    print(*p1)
-    print('Parent 2:', end=' ')
-    print(*p2)
-    orderedCrossover_v1(p1,p2)
+    best_way, last_pop = genect(cities, 5, 'ordered_v1', 'swap', k_gen=10)
+    print('Best route:')
+    print(*best_way)
+    
 
 if __name__ == '__main__':
     main()
