@@ -177,7 +177,7 @@ def mutate_v2(child):
         mutate_v2(child)
     
     else:
-        aux = child[index_1:index_2+1]
+        aux = list(child[index_1:index_2+1])
         aux1 = aux
         aux = random.sample(aux,len(aux))
         if aux == aux1:
