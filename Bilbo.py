@@ -37,13 +37,9 @@ def distances_between_points(p1, p2):
     '''
     return np.dot((p1-p2),(p1-p2))
 
-def fitness(route, cities):
+def euclidian_distance_calc(route, cities):
     '''
-    Calculates and return route fitness with base in the Euclidean distance.
-    
-    The fitness is given by:
-        1 / log10(Euclidean distance)
-
+    Return euclidian distance between the cities of given route
     '''
     distances_between_cities = []
     
@@ -57,9 +53,20 @@ def fitness(route, cities):
             p2 = np.array(cities['COORD'][route[i-1]],cities['SECTION'][route[i-1]])
             distances_between_cities.append(distances_between_points(p1,p2))
         
-    euclidan_distance = math.sqrt(np.sum(distances_between_cities))
+    euclidian_distance = math.sqrt(np.sum(distances_between_cities))
+    return euclidian_distance
+
+def fitness(route, cities):
+    '''
+    Calculates and return route fitness with base in the Euclidean distance.
     
-    fitness = 1 / np.log10(euclidan_distance)
+    The fitness is given by:
+        1 / log10(Euclidean distance)
+
+    '''
+    
+    euclidian_distance = euclidian_distance_calc(route, cities)
+    fitness = 1 / np.log10(euclidian_distance)
     
     return fitness
 
@@ -252,7 +259,7 @@ def genect(cities, pop_size, crossover, mutation, chance_multation=0.05, elitsm=
             if np.random.uniform() < chance_multation:
                 if mutation == 'swap':
                     child = mutate_v1(child)
-                elif mutation == 'scramble ':
+                elif mutation == 'scramble':
                     child = mutate_v2(child)
                 else:
                     raise Exception('Mutation ' + mutation + ' not implemented yet')
@@ -294,9 +301,29 @@ def genect(cities, pop_size, crossover, mutation, chance_multation=0.05, elitsm=
 
 def main():
     cities = pd.read_csv('data/a280.csv', ';')
-    best_way, last_pop = genect(cities, 5, 'alternative', 'swap', k_gen=10)
-    print('Best route:')
-    print(*best_way)
+    best_way, last_pop = genect(cities, 5, 'alternative', 'swap', k_gen=15)
+    print('pop inicial 5 | Crossosever alternativo | mutação swap | estagnação 15 | sem elitismo')
+    print('Distance: ')
+    print(euclidian_distance_calc(best_way, cities))
+    print('\n\n')
+    
+    best_way, last_pop = genect(cities, 5, 'alternative', 'scramble', k_gen=15)
+    print('pop inicial 5 | Crossosever alternativo | mutação scramble | estagnação 15 | sem elitismo')
+    print('Distance: ')
+    print(euclidian_distance_calc(best_way, cities))
+    print('\n\n')
+    
+    best_way, last_pop = genect(cities, 5, 'ordered_v2', 'swap', k_gen=15)
+    print('pop inicial 5 | Crossosever alternativo | mutação swap | estagnação 15 | sem elitismo')
+    print('Distance: ')
+    print(euclidian_distance_calc(best_way, cities))
+    print('\n\n')
+    
+    best_way, last_pop = genect(cities, 5, 'ordered_v2', 'scramble', k_gen=15)
+    print('pop inicial 5 | Crossosever alternativo | mutação scramble | estagnação 15 | sem elitismo')
+    print('Distance: ')
+    print(euclidian_distance_calc(best_way, cities))
+    print('\n\n')
     
 
 if __name__ == '__main__':
