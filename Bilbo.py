@@ -8,7 +8,8 @@ Created on Wed Oct 24 21:33:23 2018
 
 import math
 import random
-import functools
+from sys import argv
+
 from matplotlib import pyplot as plt
 import numpy as np
 import pandas as pd
@@ -228,13 +229,17 @@ def argmax(vetor):
     '''
     return np.argsort(vetor)[-1]
 
-def genect(cities, pop_size, crossover, mutation, chance_multation=0.05, elitsm=False, fitness_fn=fitness, k_gen=10, stagnation=True):
+def genect(cities, pop_size, crossover, mutation, chance_multation=0.10, elitsm=0, fitness_fn=fitness, k_gen=10):
     pop = initialPopulation(list(cities['NODE']), pop_size)
     
     # Subtract necessary because this will be used as indices in arrays
     pop = np.subtract(pop, 1)
     
-    best_solution = pop[argmax(map(fitness_fn, pop))]
+    fits = []
+    for i in range(len(pop)):
+        fits.append(fitness(pop[i],cities))
+    
+    best_solution = pop[argmax(fits)]
     max_solution = []
     avg_solution = []
     number_generations = 0
@@ -267,10 +272,26 @@ def genect(cities, pop_size, crossover, mutation, chance_multation=0.05, elitsm=
             new_pop.append(child)
             
         if elitsm:
-            pass
+            fits = []
+            for i in range(len(pop)):
+                fits.append(fitness(pop[i],cities))
+            best_individuals = np.argsort(fits)
+            best_individuals.reverse()
+            
+            for i in range(elitsm):
+                pop[i] = pop[best_individuals[i]]
+            
+            for i in range(elitsm+1, len(new_pop)):
+                pop[i] = new_pop[i]
+                    
+        else:
+            pop = new_pop
         
-        pop = new_pop
-        new_best_solution = pop[argmax(map(fitness_fn, pop))]
+        fits = []
+        for i in range(len(pop)):
+            fits.append(fitness_fn(pop[i],cities))
+            
+        new_best_solution = pop[argmax(fits)]
         print('Generation Fitness: {}'.format(fitness_fn(new_best_solution, cities)))
         
         if fitness_fn(new_best_solution, cities) > fitness_fn(best_solution, cities):
@@ -295,36 +316,39 @@ def genect(cities, pop_size, crossover, mutation, chance_multation=0.05, elitsm=
     plt.ylabel('Fitness')
     plt.xlabel('Generation')
     plt.show()
+    plt.savefig('results/popSize_{}_crossover_{}_mutation_{}_estag_{}_elitms_{}.pdf'.format(pop_size, crossover, mutation, k_gen, elitsm))
     
-    return best_solution, pop
+    return best_solution
             
 
 def main():
     cities = pd.read_csv('data/a280.csv', ';')
-    best_way, last_pop = genect(cities, 5, 'alternative', 'swap', k_gen=15)
-    print('pop inicial 5 | Crossosever alternativo | mutação swap | estagnação 15 | sem elitismo')
+    pop_size = 15
+    estag = 100
+    
+    best_way = genect(cities, pop_size, 'alternative', 'swap', k_gen=estag)
+    print('pop inicial 100 | Crossosever alternativo | mutação swap | estagnação 20 | sem elitismo')
     print('Distance: ')
     print(euclidian_distance_calc(best_way, cities))
     print('\n\n')
     
-    best_way, last_pop = genect(cities, 5, 'alternative', 'scramble', k_gen=15)
-    print('pop inicial 5 | Crossosever alternativo | mutação scramble | estagnação 15 | sem elitismo')
+    best_way = genect(cities, pop_size, 'alternative', 'scramble', k_gen=estag)
+    print('pop inicial 100 | Crossosever alternativo | mutação scramble | estagnação 20 | sem elitismo')
     print('Distance: ')
     print(euclidian_distance_calc(best_way, cities))
     print('\n\n')
     
-    best_way, last_pop = genect(cities, 5, 'ordered_v2', 'swap', k_gen=15)
-    print('pop inicial 5 | Crossosever alternativo | mutação swap | estagnação 15 | sem elitismo')
+    best_way = genect(cities, pop_size, 'ordered_v2', 'swap', k_gen=estag)
+    print('pop inicial 100 | Crossosever ordered_v2 | mutação swap | estagnação 20 | sem elitismo')
     print('Distance: ')
     print(euclidian_distance_calc(best_way, cities))
     print('\n\n')
     
-    best_way, last_pop = genect(cities, 5, 'ordered_v2', 'scramble', k_gen=15)
-    print('pop inicial 5 | Crossosever alternativo | mutação scramble | estagnação 15 | sem elitismo')
+    best_way = genect(cities, pop_size, 'ordered_v2', 'scramble', k_gen=estag)
+    print('pop inicial 100 | Crossosever ordered_v2 | mutação scramble | estagnação 20 | sem elitismo')
     print('Distance: ')
     print(euclidian_distance_calc(best_way, cities))
     print('\n\n')
     
-
 if __name__ == '__main__':
     main()
