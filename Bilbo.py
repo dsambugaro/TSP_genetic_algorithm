@@ -229,7 +229,7 @@ def argmax(vetor):
     '''
     return np.argsort(vetor)[-1]
 
-def genect(cities, pop_size, crossover, mutation, chance_multation=0.10, elitsm=0, fitness_fn=fitness, k_gen=10):
+def genetic(cities, pop_size, crossover, mutation, chance_mutation=0.10, elitsm=0, fitness_fn=fitness, k_gen=100):
     pop = initialPopulation(list(cities['NODE']), pop_size)
     
     # Subtract necessary because this will be used as indices in arrays
@@ -261,7 +261,7 @@ def genect(cities, pop_size, crossover, mutation, chance_multation=0.10, elitsm=
                 child = alternativeCrossover(parent_1, parent_2)
             else:
                 raise Exception('Crossover ' + crossover + ' not implemented yet')
-            if np.random.uniform() < chance_multation:
+            if np.random.uniform() < chance_mutation:
                 if mutation == 'swap':
                     child = mutate_v1(child)
                 elif mutation == 'scramble':
@@ -326,25 +326,25 @@ def main():
     pop_size = 15
     estag = 100
     
-    best_way = genect(cities, pop_size, 'alternative', 'swap', k_gen=estag)
+    best_way = genetic(cities, pop_size, 'alternative', 'swap', k_gen=estag)
     print('pop inicial 100 | Crossosever alternativo | mutação swap | estagnação 20 | sem elitismo')
     print('Distance: ')
     print(euclidian_distance_calc(best_way, cities))
     print('\n\n')
     
-    best_way = genect(cities, pop_size, 'alternative', 'scramble', k_gen=estag)
+    best_way = genetic(cities, pop_size, 'alternative', 'scramble', k_gen=estag)
     print('pop inicial 100 | Crossosever alternativo | mutação scramble | estagnação 20 | sem elitismo')
     print('Distance: ')
     print(euclidian_distance_calc(best_way, cities))
     print('\n\n')
     
-    best_way = genect(cities, pop_size, 'ordered_v2', 'swap', k_gen=estag)
+    best_way = genetic(cities, pop_size, 'ordered_v2', 'swap', k_gen=estag)
     print('pop inicial 100 | Crossosever ordered_v2 | mutação swap | estagnação 20 | sem elitismo')
     print('Distance: ')
     print(euclidian_distance_calc(best_way, cities))
     print('\n\n')
     
-    best_way = genect(cities, pop_size, 'ordered_v2', 'scramble', k_gen=estag)
+    best_way = genetic(cities, pop_size, 'ordered_v2', 'scramble', k_gen=estag)
     print('pop inicial 100 | Crossosever ordered_v2 | mutação scramble | estagnação 20 | sem elitismo')
     print('Distance: ')
     print(euclidian_distance_calc(best_way, cities))
