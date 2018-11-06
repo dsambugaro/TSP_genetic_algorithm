@@ -243,10 +243,10 @@ def genetic(cities, pop_size, crossover, mutation, chance_mutation=0.10, elitsm=
     max_solution = []
     avg_solution = []
     
-    max_solution.append(fitness_fn(best_solution, cities))        
+    #max_solution.append(fitness_fn(best_solution, cities))        
 
     fits_sum = sum(fits)
-    avg_solution.append(fits_sum / len(pop))
+    #avg_solution.append(fits_sum / len(pop))
     
     number_generations = 0
     
@@ -335,30 +335,30 @@ def genetic(cities, pop_size, crossover, mutation, chance_mutation=0.10, elitsm=
             
 
 def main():
-    cities = pd.read_csv('data/a280.csv', ';')
-    pop_size = 10
-    estag = 50
-    qt_elitsm = 3
+    cities = pd.read_csv('data/berlin52.csv', ';')
+    pop_size = 7
+    estag = 10
+    qt_elitsm = 2
     
-    best_way, distance = genetic(cities, pop_size, 'alternative', 'swap', k_gen=estag)
-    print('Distance: ')
-    print(distance)
-    print('\n\n')
+    #best_way, distance = genetic(cities, pop_size, 'alternative', 'swap', k_gen=estag)
+    #print('Distance: ')
+    #print(distance)
+    #print('\n\n')
     
-    best_way, distance = genetic(cities, pop_size, 'alternative', 'scramble', k_gen=estag)
-    print('Distance: ')
-    print(distance)
-    print('\n\n')
+    #best_way, distance = genetic(cities, pop_size, 'alternative', 'scramble', k_gen=estag)
+    #print('Distance: ')
+    #print(distance)
+    #print('\n\n')
     
-    best_way, distance = genetic(cities, pop_size, 'ordered_v2', 'swap', k_gen=estag)
-    print('Distance: ')
-    print(distance)
-    print('\n\n')
+    #best_way, distance = genetic(cities, pop_size, 'ordered_v2', 'swap', k_gen=estag)
+    #print('Distance: ')
+    #print(distance)
+    #print('\n\n')
     
-    best_way, distance = genetic(cities, pop_size, 'ordered_v2', 'scramble', k_gen=estag)
-    print('Distance: ')
-    print(distance)
-    print('\n\n')
+    #best_way, distance = genetic(cities, pop_size, 'ordered_v2', 'scramble', k_gen=estag)
+    #print('Distance: ')
+    #print(distance)
+    #print('\n\n')
     
     # Elitismo
     best_way, distance = genetic(cities, pop_size, 'alternative', 'swap', k_gen=estag, elitsm=qt_elitsm)
@@ -371,15 +371,15 @@ def main():
     print(distance)
     print('\n\n')
     
-    best_way, distance = genetic(cities, pop_size, 'ordered_v2', 'swap', k_gen=estag, elitsm=qt_elitsm)
-    print('Distance: ')
-    print(distance)
-    print('\n\n')
+    #best_way, distance = genetic(cities, pop_size, 'ordered_v2', 'swap', k_gen=estag, elitsm=qt_elitsm)
+    #print('Distance: ')
+    #print(distance)
+    #print('\n\n')
     
-    best_way, distance = genetic(cities, pop_size, 'ordered_v2', 'scramble', k_gen=estag, elitsm=qt_elitsm)
-    print('Distance: ')
-    print(distance)
-    print('\n\n')
+    #best_way, distance = genetic(cities, pop_size, 'ordered_v2', 'scramble', k_gen=estag, elitsm=qt_elitsm)
+    #print('Distance: ')
+    #print(distance)
+    #print('\n\n')
     
 if __name__ == '__main__':
     main()
