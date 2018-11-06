@@ -328,17 +328,17 @@ def genetic(cities, pop_size, crossover, mutation, chance_mutation=0.10, elitsm=
     plt.title('Fitness através das gerações')
     plt.grid( which='both', linestyle='-.')
     plt.minorticks_on()
-    plt.savefig('results/berlin52_popSize_{}_crossover_{}_mutation_{}_estag_{}_elitms_{}_{}.png'.format(pop_size, crossover, mutation, k_gen, elitsm, best_distance))
+    plt.savefig('results/a280_popSize_{}_crossover_{}_mutation_{}_estag_{}_elitms_{}_{}.png'.format(pop_size, crossover, mutation, k_gen, elitsm, best_distance))
     plt.show()
     
     return best_solution, best_distance
             
 
 def main():
-    cities = pd.read_csv('data/berlin52.csv', ';')
-    pop_size = 7
-    estag = 10
-    qt_elitsm = 2
+    cities = pd.read_csv('data/a280.csv', ';')
+    pop_size = 10
+    estag = 50
+    qt_elitsm = 3
     
     #best_way, distance = genetic(cities, pop_size, 'alternative', 'swap', k_gen=estag)
     #print('Distance: ')
@@ -371,15 +371,15 @@ def main():
     print(distance)
     print('\n\n')
     
-    #best_way, distance = genetic(cities, pop_size, 'ordered_v2', 'swap', k_gen=estag, elitsm=qt_elitsm)
-    #print('Distance: ')
-    #print(distance)
-    #print('\n\n')
+    best_way, distance = genetic(cities, pop_size, 'ordered_v2', 'swap', k_gen=estag, elitsm=qt_elitsm)
+    print('Distance: ')
+    print(distance)
+    print('\n\n')
     
-    #best_way, distance = genetic(cities, pop_size, 'ordered_v2', 'scramble', k_gen=estag, elitsm=qt_elitsm)
-    #print('Distance: ')
-    #print(distance)
-    #print('\n\n')
+    best_way, distance = genetic(cities, pop_size, 'ordered_v2', 'scramble', k_gen=estag, elitsm=qt_elitsm)
+    print('Distance: ')
+    print(distance)
+    print('\n\n')
     
 if __name__ == '__main__':
     main()
