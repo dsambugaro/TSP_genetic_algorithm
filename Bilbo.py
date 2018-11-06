@@ -242,6 +242,12 @@ def genetic(cities, pop_size, crossover, mutation, chance_mutation=0.10, elitsm=
     best_solution = pop[argmax(fits)]
     max_solution = []
     avg_solution = []
+    
+    max_solution.append(fitness_fn(best_solution, cities))        
+
+    fits_sum = sum(fits)
+    avg_solution.append(fits_sum / len(pop))
+    
     number_generations = 0
     
     last_improvement = 0
@@ -276,7 +282,8 @@ def genetic(cities, pop_size, crossover, mutation, chance_mutation=0.10, elitsm=
             for i in range(len(pop)):
                 fits.append(fitness(pop[i],cities))
             best_individuals = np.argsort(fits)
-            best_individuals.reverse()
+            best_individuals = list(best_individuals)
+            best_individuals.reverse() # indices of best individues, sorted by fitness
             
             for i in range(elitsm):
                 pop[i] = pop[best_individuals[i]]
