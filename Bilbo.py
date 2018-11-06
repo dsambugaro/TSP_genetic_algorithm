@@ -328,7 +328,7 @@ def genetic(cities, pop_size, crossover, mutation, chance_mutation=0.10, elitsm=
     plt.title('Fitness através das gerações')
     plt.grid( which='both', linestyle='-.')
     plt.minorticks_on()
-    plt.savefig('results/popSize_{}_crossover_{}_mutation_{}_estag_{}_elitms_{}_{}.png'.format(pop_size, crossover, mutation, k_gen, elitsm, best_distance))
+    plt.savefig('results/berlin52_popSize_{}_crossover_{}_mutation_{}_estag_{}_elitms_{}_{}.png'.format(pop_size, crossover, mutation, k_gen, elitsm, best_distance))
     plt.show()
     
     return best_solution, best_distance
