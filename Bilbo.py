@@ -248,7 +248,7 @@ def genetic(cities, pop_size, crossover, mutation, chance_mutation=0.10, elitsm=
     
     while last_improvement < k_gen:
         number_generations += 1
-        print('Generation: {}'.format(number_generations))
+        #print('Generation: {}'.format(number_generations))
         new_pop = []
         for individual in pop:
             parent_1 = pick_parent(pop, cities, fitness_fn)
@@ -292,11 +292,13 @@ def genetic(cities, pop_size, crossover, mutation, chance_mutation=0.10, elitsm=
             fits.append(fitness_fn(pop[i],cities))
             
         new_best_solution = pop[argmax(fits)]
-        print('Generation Fitness: {}'.format(fitness_fn(new_best_solution, cities)))
+        #print('Generation Fitness: {}'.format(fitness_fn(new_best_solution, cities)))
         
         if fitness_fn(new_best_solution, cities) > fitness_fn(best_solution, cities):
             best_solution = new_best_solution
             last_improvement = 0
+            print('Generation: {}'.format(number_generations))
+            print('New best solution: {}'.format(fitness_fn(best_solution, cities)))
         else:
             last_improvement += 1
         
@@ -308,46 +310,68 @@ def genetic(cities, pop_size, crossover, mutation, chance_mutation=0.10, elitsm=
         fits_sum = sum(fits)        
         
         avg_solution.append(fits_sum / len(pop))
-        
+    
+    best_distance = euclidian_distance_calc(best_solution, cities)
     plt.figure()
     plt.plot(range(number_generations), max_solution, label='Max fitness')
     plt.plot(range(number_generations), avg_solution, label='Avg fitness')
     plt.legend()
     plt.ylabel('Fitness')
     plt.xlabel('Generation')
+    plt.title('Fitness através das gerações')
+    plt.grid( which='both', linestyle='-.')
+    plt.minorticks_on()
+    plt.savefig('results/popSize_{}_crossover_{}_mutation_{}_estag_{}_elitms_{}_{}.png'.format(pop_size, crossover, mutation, k_gen, elitsm, best_distance))
     plt.show()
-    plt.savefig('results/popSize_{}_crossover_{}_mutation_{}_estag_{}_elitms_{}.pdf'.format(pop_size, crossover, mutation, k_gen, elitsm))
     
-    return best_solution
+    return best_solution, best_distance
             
 
 def main():
     cities = pd.read_csv('data/a280.csv', ';')
-    pop_size = 15
-    estag = 100
+    pop_size = 10
+    estag = 50
+    qt_elitsm = 3
     
-    best_way = genetic(cities, pop_size, 'alternative', 'swap', k_gen=estag)
-    print('pop inicial 100 | Crossosever alternativo | mutação swap | estagnação 20 | sem elitismo')
+    best_way, distance = genetic(cities, pop_size, 'alternative', 'swap', k_gen=estag)
     print('Distance: ')
-    print(euclidian_distance_calc(best_way, cities))
+    print(distance)
     print('\n\n')
     
-    best_way = genetic(cities, pop_size, 'alternative', 'scramble', k_gen=estag)
-    print('pop inicial 100 | Crossosever alternativo | mutação scramble | estagnação 20 | sem elitismo')
+    best_way, distance = genetic(cities, pop_size, 'alternative', 'scramble', k_gen=estag)
     print('Distance: ')
-    print(euclidian_distance_calc(best_way, cities))
+    print(distance)
     print('\n\n')
     
-    best_way = genetic(cities, pop_size, 'ordered_v2', 'swap', k_gen=estag)
-    print('pop inicial 100 | Crossosever ordered_v2 | mutação swap | estagnação 20 | sem elitismo')
+    best_way, distance = genetic(cities, pop_size, 'ordered_v2', 'swap', k_gen=estag)
     print('Distance: ')
-    print(euclidian_distance_calc(best_way, cities))
+    print(distance)
     print('\n\n')
     
-    best_way = genetic(cities, pop_size, 'ordered_v2', 'scramble', k_gen=estag)
-    print('pop inicial 100 | Crossosever ordered_v2 | mutação scramble | estagnação 20 | sem elitismo')
+    best_way, distance = genetic(cities, pop_size, 'ordered_v2', 'scramble', k_gen=estag)
     print('Distance: ')
-    print(euclidian_distance_calc(best_way, cities))
+    print(distance)
+    print('\n\n')
+    
+    # Elitismo
+    best_way, distance = genetic(cities, pop_size, 'alternative', 'swap', k_gen=estag, elitsm=qt_elitsm)
+    print('Distance: ')
+    print(distance)
+    print('\n\n')
+    
+    best_way, distance = genetic(cities, pop_size, 'alternative', 'scramble', k_gen=estag, elitsm=qt_elitsm)
+    print('Distance: ')
+    print(distance)
+    print('\n\n')
+    
+    best_way, distance = genetic(cities, pop_size, 'ordered_v2', 'swap', k_gen=estag, elitsm=qt_elitsm)
+    print('Distance: ')
+    print(distance)
+    print('\n\n')
+    
+    best_way, distance = genetic(cities, pop_size, 'ordered_v2', 'scramble', k_gen=estag, elitsm=qt_elitsm)
+    print('Distance: ')
+    print(distance)
     print('\n\n')
     
 if __name__ == '__main__':
